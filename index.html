@@ -157,6 +157,7 @@
     .g3 { grid-template-columns:1fr !important; }
     .idx { grid-template-columns:44px 1fr !important; }
     .pad { padding-left:24px !important; padding-right:24px !important; }
+    .foot { justify-content:flex-start !important; }
     .tall { height:72vh !important; }
     .airy { padding-top:96px !important; padding-bottom:96px !important; }
     .navlink { display:none !important; }
@@ -360,8 +361,7 @@
 </sc-if>
 
 <footer class="pad" style="padding:72px 40px 80px; border-top:1px solid rgba(27,51,43,0.16);">
-  <div class="g2" style="max-width:1080px; margin:0 auto; display:grid; grid-template-columns:1fr auto; gap:28px 48px; align-items:start; font-size:13px; line-height:1.8; color:rgba(27,51,43,0.7);">
-    <span style="max-width:44em;">{{ t.disclaimer }}</span>
+  <div class="foot" style="max-width:1080px; margin:0 auto; display:flex; justify-content:flex-end; font-size:13px; line-height:1.8;">
     <a href="#top" sc-camel-on-click="{{ goPriv }}" style="font-size:10.5px; letter-spacing:0.22em; text-transform:uppercase; color:#1B332B; padding-top:3px;">{{ t.privLink }}</a>
   </div>
 </footer>
@@ -520,8 +520,7 @@ class Component extends DCLogic {
         "As mensagens enviadas pelo formulário de contato ou por e-mail são tratadas exclusivamente para responder ao contato e conduzir os procedimentos preliminares a eventual contratação, nos termos do art. 7º, V, da Lei nº 13.709/2018.",
         "As mensagens ficam armazenadas em serviço de e-mail contratado junto ao Google, o que pode envolver tratamento de dados fora do Brasil. Não havendo contratação, são eliminadas em até um ano.",
         "Os direitos previstos no art. 18 da Lei nº 13.709/2018 podem ser exercidos pelo endereço contato@musacchio.law."
-      ],
-      disclaimer: "O conteúdo deste site tem caráter meramente informativo e não constitui consulta ou orientação jurídica."
+      ]
     },
 
     en: {
@@ -666,8 +665,7 @@ class Component extends DCLogic {
         "Messages sent through the contact form or by e-mail are processed solely to reply to the inquiry and to carry out the steps preliminary to a possible engagement, under article 7, V, of Brazilian Law no. 13,709/2018.",
         "Messages are stored in an e-mail service contracted from Google, which may involve the processing of data outside Brazil. Where no engagement follows, they are deleted within one year.",
         "The rights set out in article 18 of Brazilian Law no. 13,709/2018 may be exercised at contato@musacchio.law."
-      ],
-      disclaimer: "The content of this site is for information only and does not constitute legal consultation or advice."
+      ]
     }
   };
 
