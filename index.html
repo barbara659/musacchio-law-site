@@ -140,6 +140,16 @@
   .send:focus { outline:none; }
   .send:focus-visible { outline:1px solid #A98B5B; outline-offset:6px; }
 
+  .menu-btn { display:none; appearance:none; -webkit-appearance:none; background:none; border:0; border-radius:0; padding:0; margin:0; font:inherit; letter-spacing:inherit; text-transform:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .menu-btn:focus { outline:none; }
+  .menu-btn:focus-visible { outline:1px solid #A98B5B; outline-offset:6px; }
+  .mm { position:fixed; inset:0; z-index:50; display:flex; flex-direction:column; background:#1B332B; opacity:0; visibility:hidden; transition:opacity 320ms linear, visibility 0s linear 320ms; }
+  .mm-open { opacity:1; visibility:visible; transition:opacity 320ms linear, visibility 0s linear 0s; }
+  .mm-link { display:block; padding:24px 0; border-top:1px solid rgba(240,237,228,0.16); font-family:'Cormorant Garamond',serif; font-weight:300; font-size:26px; line-height:1.3; letter-spacing:0.14em; text-transform:uppercase; color:#F0EDE4; }
+  .mm-link:last-child { border-bottom:1px solid rgba(240,237,228,0.16); }
+  @media (min-width:769px) { .mm { display:none; } }
+  @media (prefers-reduced-motion:reduce) { .mm, .mm-open { transition:none; } }
+
   @media (prefers-reduced-motion:reduce) {
     .ac-panel, .ac-open .ac-panel, .ac-body, .ac-open .ac-body, .ac-sign::before, .ac-sign::after { transition:none; }
   }
@@ -161,6 +171,7 @@
     .tall { height:72vh !important; }
     .airy { padding-top:96px !important; padding-bottom:96px !important; }
     .navlink { display:none !important; }
+    .menu-btn { display:inline-block; }
     .ac-head { gap:14px 18px; padding:30px 0; }
     .ac-body { padding-bottom:30px; }
     .ac-group { padding:18px 0 20px; }
@@ -198,6 +209,7 @@
     <a class="navlink" href="#equipe" sc-camel-on-click="{{ goHome }}" style="color:{{ headFg }};">{{ t.navTeam }}</a>
     <a class="navlink" href="#publicacoes" sc-camel-on-click="{{ goHome }}" style="color:{{ headFg }};">{{ t.navPubs }}</a>
     <a class="navlink" href="#contato" sc-camel-on-click="{{ goHome }}" style="color:{{ headFg }};">{{ t.navContact }}</a>
+    <button type="button" class="menu-btn" aria-expanded="{{ menuExpanded }}" aria-controls="menu-celular" sc-camel-on-click="{{ openMenu }}" style="color:{{ headFg }};">{{ t.menuOpen }}</button>
     <span style="display:flex; align-items:center; gap:8px; letter-spacing:0.18em;">
       <a href="#" sc-camel-on-click="{{ setPT }}" style="color:{{ ptColor }};">PT</a>
       <span style="color:{{ headDim }};">/</span>
@@ -205,6 +217,27 @@
     </span>
   </nav>
 </header>
+
+<div id="menu-celular" class="{{ menuCls }}" role="dialog" aria-modal="true" aria-label="{{ t.menuOpen }}" aria-hidden="{{ menuHidden }}">
+  <div class="pad" style="display:flex; align-items:center; justify-content:space-between; gap:32px; padding:26px 40px;">
+    <span style="display:flex; flex-direction:column; align-items:center; gap:7px; width:fit-content;">
+      <span style="font-family:'Marcellus',serif; font-size:16px; line-height:1; letter-spacing:0.26em; color:#F0EDE4; padding-left:0.26em;">MUSACCHIO</span>
+      <span style="font-size:7.5px; letter-spacing:0.62em; color:rgba(240,237,228,0.92); padding-left:0.62em;">LAW</span>
+    </span>
+    <button type="button" class="menu-btn" sc-camel-on-click="{{ closeMenu }}" style="color:#F0EDE4; font-size:10.5px; letter-spacing:0.22em; text-transform:uppercase;">{{ t.menuClose }}</button>
+  </div>
+  <nav class="pad" style="flex:1; display:flex; flex-direction:column; justify-content:center; padding:0 40px 24px;">
+    <a class="mm-link" href="#atuacao" sc-camel-on-click="{{ goAtuacao }}">{{ t.navPractice }}</a>
+    <a class="mm-link" href="#equipe" sc-camel-on-click="{{ goEquipe }}">{{ t.navTeam }}</a>
+    <a class="mm-link" href="#publicacoes" sc-camel-on-click="{{ goPublicacoes }}">{{ t.navPubs }}</a>
+    <a class="mm-link" href="#contato" sc-camel-on-click="{{ goContato }}">{{ t.navContact }}</a>
+  </nav>
+  <div class="pad" style="display:flex; align-items:center; gap:8px; padding:0 40px 46px; font-size:10.5px; letter-spacing:0.18em; text-transform:uppercase;">
+    <a href="#" sc-camel-on-click="{{ setPT }}" style="color:{{ mmPt }};">PT</a>
+    <span style="color:rgba(240,237,228,0.45);">/</span>
+    <a href="#" sc-camel-on-click="{{ setEN }}" style="color:{{ mmEn }};">EN</a>
+  </div>
+</div>
 
 <sc-if value="{{ isHome }}">
 <main id="top">
@@ -374,13 +407,14 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script="" data-props="{}">
 class Component extends DCLogic {
-  state = { lang: "pt", page: "home", sector: 0, hover: -1, open: {}, narrow: false, overHero: true, heroHover: false };
+  state = { lang: "pt", page: "home", sector: 0, hover: -1, open: {}, narrow: false, overHero: true, heroHover: false, menu: false };
 
   EMAIL = "contato@musacchio.law";
 
   COPY = {
     pt: {
       navPractice: "Atuação", navTeam: "Equipe", navPubs: "Publicações", navContact: "Contato",
+      menuOpen: "Menu", menuClose: "Fechar",
       statement: "Atuação em direito empresarial especializada em consultivo, contencioso e recuperação de ativos.",
       
       statement2: "A operação é estruturada com a experiência do litígio. O litígio é conduzido com o conhecimento da operação. A recuperação de ativos reúne as duas expertises.",
@@ -528,6 +562,7 @@ class Component extends DCLogic {
 
     en: {
       navPractice: "Practice areas", navTeam: "Team", navPubs: "Publications", navContact: "Contact",
+      menuOpen: "Menu", menuClose: "Close",
       statement: "Business law practice specializing in advisory work, litigation and asset recovery.",
       statement2: "Transactions are structured with the experience of litigation. Litigation is conducted with knowledge of the transaction. Asset recovery brings the two areas of expertise together.",
       sectors: [
@@ -689,12 +724,19 @@ class Component extends DCLogic {
     window.addEventListener("scroll", this._onScroll, { passive: true });
     window.addEventListener("resize", this._onScroll);
     this._onScroll();
+    this._onKey = e => { if (e.key === "Escape" && this.state.menu) this.setState({ menu: false }); };
+    window.addEventListener("keydown", this._onKey);
   }
-  componentDidUpdate() { this.reveal(); if (this._onScroll) this._onScroll(); }
+  componentDidUpdate() {
+    this.reveal();
+    if (this._onScroll) this._onScroll();
+    document.documentElement.style.overflow = this.state.menu ? "hidden" : "";
+  }
   componentWillUnmount() {
     clearInterval(this._rot);
     window.removeEventListener("scroll", this._onScroll);
     window.removeEventListener("resize", this._onScroll);
+    window.removeEventListener("keydown", this._onKey);
     if (this._mq) this._mq.removeEventListener("change", this._onMq);
   }
 
@@ -731,6 +773,16 @@ class Component extends DCLogic {
     };
   }
 
+  jump(id) {
+    return e => {
+      e.preventDefault();
+      this.setState({ menu: false, page: "home" }, () => {
+        const n = document.getElementById(id);
+        if (n) n.scrollIntoView();
+      });
+    };
+  }
+
   go(page) {
     return e => {
       e.preventDefault();
@@ -763,6 +815,17 @@ class Component extends DCLogic {
       headFg: fg, headDim: dim,
       headLaw: light ? "rgba(240,237,228,0.92)" : "#A98B5B",
       brandCls: light ? "brand over" : "brand",
+      menuCls: this.state.menu ? "mm mm-open" : "mm",
+      menuExpanded: this.state.menu ? "true" : "false",
+      menuHidden: this.state.menu ? "false" : "true",
+      mmPt: isPT ? "#F0EDE4" : "rgba(240,237,228,0.55)",
+      mmEn: isPT ? "rgba(240,237,228,0.55)" : "#F0EDE4",
+      openMenu: () => this.setState({ menu: true }),
+      closeMenu: () => this.setState({ menu: false }),
+      goAtuacao: this.jump("atuacao"),
+      goEquipe: this.jump("equipe"),
+      goPublicacoes: this.jump("publicacoes"),
+      goContato: this.jump("contato"),
       ptColor: isPT ? fg : off,
       enColor: isPT ? off : fg,
       isHome: this.state.page === "home",
