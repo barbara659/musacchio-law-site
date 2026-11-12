@@ -166,8 +166,11 @@
     .ac-group { padding:18px 0 20px; }
   }
   @media (max-width:480px) {
-    .hero-foot { flex-direction:column !important; align-items:flex-start !important; gap:22px !important; }
+    .hero-foot { flex-direction:column !important; align-items:center !important; gap:26px !important; padding-bottom:52px !important; }
+    .hero-mark { font-size:min(9.4vw,44px) !important; }
     .hero-desc { padding-bottom:0 !important; }
+    .brand { transition:opacity 400ms linear; }
+    .brand.over { opacity:0; pointer-events:none; }
   }
 </style>
 </helmet>
@@ -186,7 +189,7 @@
 </svg>
 
 <header class="pad" style="position:fixed; top:0; left:0; right:0; z-index:30; display:flex; align-items:center; justify-content:space-between; gap:32px; padding:26px 40px; background:{{ headBg }}; transition:background 500ms linear;">
-  <a href="#top" sc-camel-on-click="{{ goHome }}" style="display:flex; flex-direction:column; align-items:center; gap:7px; width:fit-content;">
+  <a class="{{ brandCls }}" href="#top" sc-camel-on-click="{{ goHome }}" style="display:flex; flex-direction:column; align-items:center; gap:7px; width:fit-content;">
     <span style="font-family:'Marcellus',serif; font-size:16px; line-height:1; letter-spacing:0.26em; color:{{ headFg }}; padding-left:0.26em; transition:color 500ms linear;">MUSACCHIO</span>
     <span style="font-size:7.5px; letter-spacing:0.62em; color:{{ headLaw }}; padding-left:0.62em;">LAW</span>
   </a>
@@ -214,7 +217,7 @@
     <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(27,51,43,0.82), rgba(27,51,43,0) 60%);"></div>
     <div class="pad hero-foot" style="position:absolute; left:0; right:0; bottom:0; display:flex; align-items:flex-end; justify-content:space-between; gap:32px; padding:0 40px 46px;">
       <div style="display:flex; flex-direction:column; align-items:center; gap:16px; width:fit-content;">
-        <span style="font-family:'Marcellus',serif; font-size:clamp(30px,4.4vw,54px); line-height:1; letter-spacing:0.26em; color:#F0EDE4; padding-left:0.26em; white-space:nowrap;">MUSACCHIO</span>
+        <span class="hero-mark" style="font-family:'Marcellus',serif; font-size:clamp(30px,4.4vw,54px); line-height:1; letter-spacing:0.26em; color:#F0EDE4; padding-left:0.26em; white-space:nowrap;">MUSACCHIO</span>
         <span style="font-size:11px; letter-spacing:0.62em; color:#F0EDE4; padding-left:0.62em;">LAW</span>
       </div>
       <span class="hero-desc" style="font-size:10.5px; letter-spacing:0.22em; text-transform:uppercase; color:rgba(240,237,228,0.75); padding-bottom:6px;">São Paulo</span>
@@ -676,15 +679,18 @@ class Component extends DCLogic {
     this._onMq = () => this.setState({ narrow: this._mq.matches });
     this._onMq();
     this._mq.addEventListener("change", this._onMq);
+    
     this._onScroll = () => {
-      const over = this.state.page === "home" && window.scrollY < window.innerHeight - 90;
+      const hero = document.querySelector("main > section");
+      const end = hero ? hero.getBoundingClientRect().bottom : window.innerHeight - window.scrollY;
+      const over = this.state.page === "home" && end > 90;
       if (over !== this.state.overHero) this.setState({ overHero: over });
     };
     window.addEventListener("scroll", this._onScroll, { passive: true });
     window.addEventListener("resize", this._onScroll);
     this._onScroll();
   }
-  componentDidUpdate() { this.reveal(); }
+  componentDidUpdate() { this.reveal(); if (this._onScroll) this._onScroll(); }
   componentWillUnmount() {
     clearInterval(this._rot);
     window.removeEventListener("scroll", this._onScroll);
@@ -756,6 +762,7 @@ class Component extends DCLogic {
       headBg: light ? "transparent" : "#F0EDE4",
       headFg: fg, headDim: dim,
       headLaw: light ? "rgba(240,237,228,0.92)" : "#A98B5B",
+      brandCls: light ? "brand over" : "brand",
       ptColor: isPT ? fg : off,
       enColor: isPT ? off : fg,
       isHome: this.state.page === "home",
